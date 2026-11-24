@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ a.company }} · AI Job Search{% endblock %}
+{% block content %}
+<p><a href="/applications">← Applications</a></p>
+<div class="head">
+  <div>
+    <h1>{{ a.company }} — {{ a.role }}</h1>
+    <p class="muted"><span class="pill">{{ a.status|replace('_', ' ') or 'no status' }}</span>
+      {% if a.fit_rating %} Fit {{ a.fit_rating }}/100 ·{% endif %} Since {{ a.date }}{% if a.deadline %} · Deadline {{ a.deadline }}{% endif %}
+      {% if a.source %} · <a href="{{ a.source }}" target="_blank" rel="noopener noreferrer">Original posting</a>{% endif %}</p>
+  </div>
+  <div class="actions">
+    {% if a.status == 'drafted' %}<a class="btn primary" href="/actions/outcome?target={{ target|urlencode }}">I've submitted it</a>{% endif %}
+    <a class="btn" href="/actions/outcome?target={{ target|urlencode }}">Log an update</a>
+    <a class="btn" href="/actions/interview?target={{ target|urlencode }}">Prepare for interview</a>
+    <a class="btn" href="/actions/gmail-sync?target={{ target|urlencode }}">Check inbox for this</a>
+  </div>
+</div>
+{% if a.notes %}<section class="card"><h2>Notes</h2><p>{{ a.notes }}</p></section>{% endif %}
+
+{% set pdfs = files|selectattr('kind', 'equalto', 'pdf')|list %}
+{% if pdfs %}
+<div class="grid2">
+  {% for f in pdfs %}
+  <section class="card">
+    <h2>{{ f.label }}</h2>
+    {% if f.exists %}
+      <iframe class="pdf" src="/files/{{ f.path }}" title="{{ f.label }}"></iframe>
+      <p><a class="btn small" href="/files/{{ f.path }}?download=1">Download</a>
+         <a class="btn small" href="/files/{{ f.path }}" target="_blank">Open full size</a></p>
+    {% else %}<p class="muted">The PDF hasn't been built yet.</p>{% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% for f in files if f.kind == 'markdown' %}
+<details class="card" {{ 'open' if 'interview_prep' in f.path or f.label == 'outcome.md' }}>
+  <summary>{{ {'job_posting.md': 'Job posting', 'outcome.md': 'Outcome & timeline'}.get(f.label, f.label) }}</summary>
+  {% if f.label.endswith('.md') %}<div class="prose">{{ docs.get(f.path, '')|md }}</div>{% else %}<pre class="pre">{{ docs.get(f.path, '') }}</pre>{% endif %}
+</details>
+{% endfor %}
+{% set others = files|selectattr('kind', 'equalto', 'other')|list %}
+{% if others %}<section class="card"><h2>Other files</h2><ul>{% for f in others %}<li><a href="/files/{{ f.path }}?download=1">{{ f.label }}</a></li>{% endfor %}</ul></section>{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if profile.name %}Hi {{ profile.name.split(' ')[0] }}{% else %}Welcome{% endif %}</h1>
+<section class="stats">
+  {% for b, n in dash.counts.items() %}
+  <a class="stat" href="/applications"><span class="num">{{ n }}</span><span>{{ b }}</span></a>
+  {% endfor %}
+</section>
+
+<div class="grid2">
+<section class="card">
+  <h2>Next actions</h2>
+  <ul class="list">
+    {% if dash.new_jobs %}<li>{{ dash.new_jobs }} job{{ 's' if dash.new_jobs != 1 }} waiting to be scored <a class="btn small" href="/actions/rank">Score jobs</a></li>{% endif %}
+    {% for a in dash.interviews %}<li>{{ a.company }} — {{ a.role }} is at <b>{{ a.bucket|lower }}</b> stage <a class="btn small" href="/actions/interview?target={{ (a.company ~ ' ' ~ a.role)|urlencode }}">Prepare</a></li>{% endfor %}
+    {% if dash.quiet %}<li>{{ dash.quiet|length }} application{{ 's' if dash.quiet|length != 1 }} with no news for 10+ days <a class="btn small" href="/actions/outcome?mode=followup">Draft follow-ups</a></li>{% endif %}
+    {% for d in dash.deadlines %}<li>Deadline <b>{{ d.date }}</b>: <a href="{{ d.link }}">{{ d.what }}</a> <span class="muted">{{ d.note }}</span></li>{% endfor %}
+    {% if not (dash.new_jobs or dash.interviews or dash.quiet or dash.deadlines) %}
+      <li class="muted">Nothing urgent. <a href="/actions/scrape">Find new jobs</a> or <a href="/apply">prepare an application</a>.</li>
+    {% endif %}
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Top matches</h2>
+  {% if dash.top_jobs %}
+  <ul class="list">
+    {% for j in dash.top_jobs %}
+    <li><span class="score s{{ (j.score // 15)|int }}">{{ j.score }}</span> {{ j.title }} · <span class="muted">{{ j.company }}</span>
+      <a class="btn small" href="/apply?url={{ j.url|urlencode }}">Prepare</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">No scored jobs yet. <a href="/actions/scrape">Find jobs</a>, then <a href="/actions/rank">score them</a>.</p>{% endif %}
+</section>
+</div>
+
+<section class="card">
+  <h2>Recent activity</h2>
+  {% include "_runlist.html" %}
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% if runs %}
+<table class="table">
+  <tr><th>Task</th><th>Started</th><th>Status</th></tr>
+  {% for r in runs %}
+  <tr><td><a href="/runs/{{ r.id }}">{{ r.title }}</a>{% if r.command == 'apply' %} <span class="muted">{{ r.prompt[7:60] }}</span>{% endif %}</td>
+      <td>{{ r.created.replace('T', ' ')[:16] }}</td>
+      <td><span class="pill {{ r.status }}">{{ r.status }}</span>{% if r.undone %} <span class="pill">undone</span>{% endif %}</td></tr>
+  {% endfor %}
+</table>
+{% else %}<p class="muted">Nothing yet.</p>{% endif %}

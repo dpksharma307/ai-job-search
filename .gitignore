@@ -121,3 +121,7 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# Local web app data (python -m webapp): run transcripts, undo snapshots and
+# scratch files - all personal.
+.webapp/

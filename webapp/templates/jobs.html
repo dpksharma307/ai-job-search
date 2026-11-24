@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Jobs · AI Job Search{% endblock %}
+{% block content %}
+<div class="head">
+  <h1>Jobs</h1>
+  <div class="actions">
+    <a class="btn" href="/actions/scrape">Find new jobs</a>
+    <a class="btn" href="/actions/rank">Score jobs{% if counts.new %} ({{ counts.new }} waiting){% endif %}</a>
+  </div>
+</div>
+<form class="tabs" method="get">
+  <a class="{{ 'on' if show == 'ranked' }}" href="/jobs?show=ranked">Scored ({{ counts.ranked }})</a>
+  <a class="{{ 'on' if show == 'new' }}" href="/jobs?show=new">Not scored yet ({{ counts.new }})</a>
+  <a class="{{ 'on' if show == 'all' }}" href="/jobs?show=all">Everything ({{ counts.all }})</a>
+  <input type="hidden" name="show" value="{{ show }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search title or company">
+</form>
+{% if not jobs %}
+  <p class="card muted">No jobs here yet. Use <b>Find new jobs</b> to search your job boards.</p>
+{% endif %}
+{% for j in jobs %}
+<article class="card job" id="{{ j.key }}">
+  <div class="jobhead">
+    {% if j.score is not none %}<span class="score s{{ (j.score // 15)|int }}" title="Fit score">{{ j.score }}</span>{% endif %}
+    <div>
+      <h3>{{ j.title }}</h3>
+      <p class="muted">{{ j.company }}{% if j.location %} · {{ j.location }}{% endif %}{% if j.portal %} · {{ j.portal|replace('-search', '') }}{% endif %}</p>
+    </div>
+    <div class="right">
+      {% if j.rank_verdict %}<span class="pill">{{ j.rank_verdict }}</span>{% endif %}
+      {% if j.tracked %}<span class="pill finished">in your applications</span>{% endif %}
+      <span class="pill">{{ j.status }}</span>
+    </div>
+  </div>
+  <div class="meta">
+    {% if j.deadline %}<span>Deadline <b>{{ j.deadline }}</b></span>{% endif %}
+    {% if j.posted_date %}<span>Posted {{ j.posted_date }}</span>{% endif %}
+    {% if j.location_verdict and j.location_verdict != 'PASS' %}<span class="warn">Location: {{ j.location_verdict }}</span>{% endif %}
+    {% if j.language_gate and j.language_gate != 'PASS' %}<span class="warn">Language: {{ j.language_gate }}{% if j.language_note %} — {{ j.language_note }}{% endif %}</span>{% endif %}
+  </div>
+  {% if j.strengths or j.gaps %}
+  <div class="grid2 sg">
+    {% if j.strengths %}<div><h4>Strengths</h4><ul>{% for s in j.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>{% endif %}
+    {% if j.gaps %}<div><h4>Gaps</h4><ul>{% for g in j.gaps %}<li>{{ g }}</li>{% endfor %}</ul></div>{% endif %}
+  </div>
+  {% endif %}
+  <div class="actions">
+    {% if j.url %}<a class="btn small" href="{{ j.url }}" target="_blank" rel="noopener noreferrer">Open posting</a>
+    {% if not j.tracked %}<a class="btn small primary" href="/apply?url={{ j.url|urlencode }}">Prepare application</a>{% endif %}
+    <a class="btn small" href="/actions/upskill?posting_url={{ j.url|urlencode }}">What would I need to learn?</a>{% endif %}
+  </div>
+</article>
+{% endfor %}
+{% endblock %}

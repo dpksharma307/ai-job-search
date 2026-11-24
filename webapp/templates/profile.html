@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Profile · AI Job Search{% endblock %}
+{% block content %}
+<div class="head">
+  <h1>Profile</h1>
+  <div class="actions">
+    <a class="btn primary" href="/actions/setup">{{ 'Update my profile' if profile.is_set_up else 'Set up my profile' }}</a>
+    <a class="btn" href="/actions/expand">Discover more skills</a>
+  </div>
+</div>
+<section class="card">
+  {% if profile.is_set_up %}
+    <p>Your profile is set up{% if profile.name %} for <b>{{ profile.name }}</b>{% endif %}. Use <b>Update my profile</b> to change one section.</p>
+  {% else %}
+    <p>Your profile still has <b>{{ profile.placeholders|length }}</b> empty fields. The best start: upload your CV and LinkedIn export below, then choose <b>Set up my profile</b> and pick "Read my documents folder".</p>
+  {% endif %}
+</section>
+
+<h2>My documents</h2>
+<p class="muted">Claude reads these when setting up your profile. They stay on this computer.</p>
+<form class="card upload" id="upload">
+  <select name="category">{% for k, label in categories.items() %}<option value="{{ k }}">{{ label }}</option>{% endfor %}</select>
+  <input type="file" name="file" required accept=".pdf,.docx,.doc,.odt,.rtf,.txt,.md,.tex,.png,.jpg,.jpeg">
+  <button class="btn primary" type="submit">Upload</button>
+  <p class="error" hidden></p>
+</form>
+<div class="cards">
+  {% for k, label in categories.items() %}
+  <section class="card">
+    <h3>{{ label }}</h3>
+    {% if documents[k] %}
+    <ul class="list">{% for d in documents[k] %}
+      <li><a href="/files/{{ d.path }}" target="_blank">{{ d.name }}</a> <span class="muted small">{{ (d.size / 1024)|round|int }} KB</span>
+        <button class="btn small danger" data-delete="{{ d.path }}" type="button">Delete</button></li>
+    {% endfor %}</ul>
+    {% else %}<p class="muted small">None yet.</p>{% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

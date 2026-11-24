@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Applications · AI Job Search{% endblock %}
+{% block content %}
+<div class="head">
+  <h1>Applications <span class="muted">({{ total }})</span></h1>
+  <div class="actions">
+    <a class="btn" href="/actions/outcome">Log an update</a>
+    <a class="btn" href="/actions/gmail-sync">Check my inbox</a>
+    <a class="btn" href="/actions/outcome?mode=followup">Follow-ups</a>
+  </div>
+</div>
+{% if not total %}<p class="card muted">No applications yet. <a href="/apply">Prepare your first one</a>.</p>{% endif %}
+<div class="board">
+  {% for b, items in columns.items() %}
+  <section class="col">
+    <h3>{{ b }} <span class="muted">{{ items|length }}</span></h3>
+    {% for a in items %}
+    <a class="card mini" href="/applications/{{ a.id }}">
+      <b>{{ a.company }}</b><br>{{ a.role }}
+      <span class="muted small">{{ a.date }}{% if a.fit_rating %} · fit {{ a.fit_rating }}{% endif %}{% if a.bucket == 'Closed' %} · {{ a.status|replace('_', ' ') }}{% endif %}</span>
+    </a>
+    {% endfor %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

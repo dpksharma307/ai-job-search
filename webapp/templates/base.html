@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-token" content="{{ token }}">
+<title>{% block title %}AI Job Search{% endblock %}</title>
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">AI Job Search</a>
+  <nav>
+    <a href="/" class="{{ 'on' if active == 'home' }}">Home</a>
+    <a href="/jobs" class="{{ 'on' if active == 'jobs' }}">Jobs</a>
+    <a href="/applications" class="{{ 'on' if active in ('applications', 'application') }}">Applications</a>
+    <a href="/profile" class="{{ 'on' if active == 'profile' }}">Profile</a>
+    <a href="/insights" class="{{ 'on' if active == 'insights' }}">Insights</a>
+    <a href="/actions" class="{{ 'on' if active in ('actions', 'action') }}">All actions</a>
+    <a href="/runs" class="{{ 'on' if active in ('runs', 'run') }}">Activity{% if busy %} <span class="dot" title="Working"></span>{% endif %}</a>
+  </nav>
+  <a class="btn primary small" href="/apply">+ Prepare application</a>
+</header>
+{% if not profile.is_set_up and active not in ('action', 'run') %}
+<div class="banner">Your profile isn't set up yet, so Claude can't tailor anything to you.
+  <a class="btn small" href="/actions/setup">Set up my profile</a></div>
+{% endif %}
+<main>{% block content %}{% endblock %}</main>
+<footer>Runs locally on this computer · your files stay in this folder</footer>
+</body>
+</html>
