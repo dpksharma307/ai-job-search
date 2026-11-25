@@ -1,0 +1,25 @@
+{# Renders a command's form. Submitting starts a run and opens its page. #}
+<form class="card runform" data-command="{{ command.name }}">
+  {% for f in command.fields %}
+  <div class="field">
+    {% if f.kind == 'checkbox' %}
+      <label class="check"><input type="checkbox" name="{{ f.name }}" {{ 'checked' if prefill.get(f.name) }}> {{ f.label }}</label>
+    {% else %}
+      <label for="f-{{ f.name }}">{{ f.label }}{% if f.required %} *{% endif %}</label>
+      {% if f.kind == 'textarea' %}
+        <textarea id="f-{{ f.name }}" name="{{ f.name }}" rows="10" placeholder="{{ f.placeholder }}">{{ prefill.get(f.name, '') }}</textarea>
+      {% elif f.kind == 'select' %}
+        <select id="f-{{ f.name }}" name="{{ f.name }}">
+          {% for value, label in f.options %}<option value="{{ value }}" {{ 'selected' if prefill.get(f.name) == value }}>{{ label }}</option>{% endfor %}
+        </select>
+      {% else %}
+        <input id="f-{{ f.name }}" name="{{ f.name }}" type="{{ 'url' if f.kind == 'url' else 'text' }}" placeholder="{{ f.placeholder }}" value="{{ prefill.get(f.name, '') }}" {{ 'inputmode=numeric' if f.kind == 'number' }}>
+      {% endif %}
+    {% endif %}
+    {% if f.help %}<p class="help">{{ f.help }}</p>{% endif %}
+  </div>
+  {% endfor %}
+  {% if command.note %}<p class="note">{{ command.note }}</p>{% endif %}
+  <p class="error" hidden></p>
+  <button class="btn primary" type="submit">{{ command.verb }}</button>
+</form>

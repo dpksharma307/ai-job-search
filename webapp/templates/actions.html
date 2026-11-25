@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}All actions · AI Job Search{% endblock %}
+{% block content %}
+<h1>All actions</h1>
+{% for g in GROUPS %}
+<h2>{{ g }}</h2>
+<div class="cards">
+  {% for c in COMMANDS.values() if c.group == g %}
+  <a class="card action" href="/actions/{{ c.name }}">
+    <h3>{{ c.title }}{% if c.advanced %} <span class="pill">Advanced</span>{% endif %}</h3>
+    <p>{{ c.summary }}</p>
+    <span class="muted small">/{{ c.name }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}

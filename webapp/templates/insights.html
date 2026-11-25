@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Insights · AI Job Search{% endblock %}
+{% block content %}
+<div class="head">
+  <h1>Insights</h1>
+  <div class="actions">
+    <a class="btn" href="/actions/upskill">Find skill gaps</a>
+    <a class="btn" href="/actions/html-report">Create offline report</a>
+    <a class="btn" href="/actions/notion-sync">Send to Notion</a>
+  </div>
+</div>
+<section class="stats">
+  <div class="stat"><span class="num">{{ ins.total }}</span><span>Applications</span></div>
+  <div class="stat"><span class="num">{{ ins.sent }}</span><span>Submitted</span></div>
+  <div class="stat"><span class="num">{{ ins.reached_interview }}</span><span>Reached interview</span></div>
+  <div class="stat"><span class="num">{% if ins.sent %}{{ (100 * ins.reached_interview / ins.sent)|round|int }}%{% else %}–{% endif %}</span><span>Interview rate</span></div>
+</section>
+<div class="grid2">
+<section class="card">
+  <h2>By status</h2>
+  {% set mx = [ins.counts.values()|max, 1]|max %}
+  {% for b, n in ins.counts.items() %}
+  <div class="bar"><span class="lbl">{{ b }}</span><span class="track"><span class="fill w{{ (10 * n / mx)|round|int }}"></span></span><span class="val">{{ n }}</span></div>
+  {% endfor %}
+  {% if ins.unknown_statuses %}<p class="small muted">Unrecognised statuses counted as Closed: {{ ins.unknown_statuses|join(', ') }}</p>{% endif %}
+</section>
+<section class="card">
+  <h2>Applications per month</h2>
+  {% if ins.by_month %}
+  {% set mx2 = [ins.by_month|map(attribute=1)|max, 1]|max %}
+  {% for m, n in ins.by_month %}
+  <div class="bar"><span class="lbl">{{ m }}</span><span class="track"><span class="fill w{{ (10 * n / mx2)|round|int }}"></span></span><span class="val">{{ n }}</span></div>
+  {% endfor %}
+  {% else %}<p class="muted">No dated applications yet.</p>{% endif %}
+</section>
+</div>
+<section class="card">
+  <h2>Reports</h2>
+  {% if ins.reports %}<ul class="list">{% for r in ins.reports %}
+    <li><a href="{{ '/view/' if r.path.endswith('.md') else '/files/' }}{{ r.path }}" target="_blank">{{ r.name }}</a></li>{% endfor %}</ul>
+  {% else %}<p class="muted">No reports yet.</p>{% endif %}
+</section>
+{% endblock %}

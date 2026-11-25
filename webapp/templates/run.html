@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ run.title }} · AI Job Search{% endblock %}
+{% block content %}
+<div id="run" data-run="{{ run.id }}">
+  <div class="head">
+    <div>
+      <h1>{{ run.title }}</h1>
+      <p class="muted">Started {{ run.created.replace('T', ' ') }} · <code>{{ run.prompt }}</code></p>
+    </div>
+    <div class="actions">
+      <span class="pill {{ run.status }}" id="status">{{ run.status }}</span>
+      <button class="btn small" id="cancel" type="button">Stop</button>
+    </div>
+  </div>
+
+  <div class="grid-run">
+    <section>
+      <div id="turns"></div>
+      <div id="working" class="card working" hidden><span class="spinner"></span> Claude is working… you can leave this page and come back.</div>
+      <form id="reply" class="card" hidden>
+        <label for="reply-text" id="reply-label">Reply to Claude</label>
+        <textarea id="reply-text" rows="4" placeholder="Type your answer, e.g. 'Yes, go ahead'"></textarea>
+        <div class="quick">
+          <button type="button" class="btn small" data-quick="Yes, go ahead.">Yes, go ahead</button>
+          <button type="button" class="btn small" data-quick="No, stop here.">No, stop here</button>
+        </div>
+        <p class="error" hidden></p>
+        <button class="btn primary" type="submit">Send</button>
+      </form>
+    </section>
+    <aside class="card">
+      <h2>Activity</h2>
+      <ol id="events" class="events"></ol>
+      <hr>
+      <p class="small muted">Cost so far: $<span id="cost">{{ '%.2f'|format(run.cost_usd or 0) }}</span></p>
+      {% if run.snapshot %}
+      <div class="undo">
+        <button class="btn small danger" id="undo" type="button" {{ 'disabled' if run.undone }}>Undo this task's changes</button>
+        <p class="small muted">Restores your files to how they were before this task started.
+        {% if later %}<br><b>This also undoes later tasks:</b> {{ later|join(', ') }}.{% endif %}</p>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
