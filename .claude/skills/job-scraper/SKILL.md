@@ -40,7 +40,7 @@ Optional arguments:
 
 ### Step 0: Load Search Strategy
 
-Read `search-queries.md` (this directory) for the search strategy. `tools/scrape_state.py` reads `job_scraper/seen_jobs.json` and `job_search_tracker.csv` for deduplication; do not load either growing file into the conversation.
+Read `search-queries.md` (this directory) for the search strategy, and `remote-boards.md` (this directory) for the remote job boards every run also searches. `tools/scrape_state.py` reads `job_scraper/seen_jobs.json` and `job_search_tracker.csv` for deduplication; do not load either growing file into the conversation.
 
 > **Windows:** run these tools as `python`, not `python3`. A python.org install ships no `python3`, so that name reaches the Microsoft Store alias, which either exits 49 with no output (#669) or starts a separate Store Python without the packages `pip` installed (such as pypdf). `.claude/settings.json` allows both spellings.
 
@@ -82,6 +82,7 @@ Use `WebSearch` for:
 - Portals listed in `search-queries.md` that do **not** have a corresponding directory under `.agents/skills/`
 - Any portal whose CLI fails at runtime
 - When bun is unavailable (Step 1a failed)
+- The remote job boards in `remote-boards.md` (Scale AI remote roles, Wellfound, NoDesk, Himalayas, Dynamite Jobs, We Work Remotely, FlexJobs, Remote OK, Secret Remote, Crossover). These run on **every** search, not only when something fails: follow that file's query, location and date rules, and skip any board whose `enabled` column is `no`
 
 Use the site-specific query strings from `search-queries.md` directly as WebSearch queries for these portals.
 
@@ -308,7 +309,7 @@ If the user decides to apply to any job, the tracker row is written by **job-app
 
 1. **Never fabricate job postings.** Only present jobs from actual CLI search/detail output or WebSearch/WebFetch results.
 2. **Respect deduplication.** Always check job_scraper/seen_jobs.json AND job_search_tracker.csv before presenting.
-3. **Focus on configured geographic area.** Skip jobs that require relocation or are clearly outside commute range.
+3. **Focus on configured geographic area.** Skip jobs that require relocation or are clearly outside commute range. Fully remote postings, including everything from `remote-boards.md`, are checked against where the role hires from instead of commute range (see that file's rules).
 4. **Only open positions.** Skip postings with expired deadlines or those marked as closed.
 5. **Be efficient with detail fetches.** Don't run `detail` or WebFetch on every search hit — pre-filter by title/snippet, then fetch only promising matches.
 6. **Parallel searches.** Run portal CLI searches in parallel; use WebSearch only for gaps the CLIs don't cover.

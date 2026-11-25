@@ -18,6 +18,9 @@ Primary (your market's job boards - scaffold one with `/add-portal`):
 - **[YOUR_INDUSTRY_JOB_BOARD]** - a niche/industry board for your field (optional)
 - **[YOUR_ADDITIONAL_JOB_BOARD]** - another major board for your market (optional)
 
+Remote job boards (searched on every run through the WebSearch fallback; the list, `site:` filters and rules live in `remote-boards.md`):
+- Scale AI remote roles, Wellfound, NoDesk, Himalayas, Dynamite Jobs, We Work Remotely, FlexJobs, Remote OK, Secret Remote, Crossover
+
 Secondary (company career pages via Google):
 - Direct Google searches with `site:` filters for known target companies
 
@@ -108,7 +111,7 @@ site:[YOUR_JOB_BOARD] "technical consultant" [YOUR_DOMAIN] [YOUR_CITY]
 
 ## Location Filter
 
-When evaluating results, verify the job location is within reasonable commute distance from your home. Define acceptable areas:
+When evaluating results, verify the job location is within reasonable commute distance from your home. Fully remote postings (including every result from `remote-boards.md`) are checked against the regions the role hires from instead, per that file's rules. Define acceptable areas:
 - [YOUR_CITY] and surrounding areas
 - [ACCEPTABLE_AREA_1]
 - [ACCEPTABLE_AREA_2]
